@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Creador de GIF para LinkedIn</title>
     <!-- Cargamos los scripts del codificador desde un CDN ultra-estable y rápido -->
-    <script src="https://jsdelivr.net"></script>
-    <script src="https://jsdelivr.net"></script>
-    <script src="https://jsdelivr.net"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gif.js.optimized/dist/gif.js"></script>
+    
     <style>
         :root {
             --linkedin-blue: #0a66c2;
@@ -159,11 +159,11 @@
 
     function createAnimateGif(userImg, name, headline) {
         // CORRECCIÓN CLAVE: Inicializar el codificador y forzar sus dimensiones antes de arrancar
-        const encoder = new GIFEncoder();
-        encoder.setRepeat(0); // Bucle infinito
-        encoder.setDelay(250); // Velocidad (250ms por frame)
-        encoder.setSize(500, 500); // <- ¡Obligatorio para que addFrame() no explote!
-        encoder.start();
+        const gif = new GIF({
+    workers: 2,
+    quality: 10,
+    workerScript: 'https://cdn.jsdelivr.net/npm/gif.js.optimized/dist/gif.worker.js'
+});
 
         const totalFrames = 8; 
 
@@ -229,24 +229,24 @@
             ctx.fillText('Ver mi Perfil 🔗', 250, 463);
 
             // Inyectar el frame actual al codificador de píxeles
-            encoder.addFrame(ctx);
+                gif.addFrame(canvas, {
+                copy: true,
+                delay: 250
+            });
         }
 
-        encoder.finish();
-        
-        // Extraer los flujos de datos binarios y empaquetar el GIF final
-        const binaryStream = encoder.stream();
-        const dataBytes = new Uint8Array(binaryStream.pages.reduce((acc, page) => acc.concat(page), []));
-        const blob = new Blob([dataBytes], { type: 'image/gif' });
-        
-        finalBlobUrl = URL.createObjectURL(blob);
-        previewGif.src = finalBlobUrl;
-        
-        // Mostrar los resultados y restaurar los controles
-        previewContainer.style.display = 'block';
-        generateBtn.disabled = false;
-        loader.style.display = 'none';
-    }
+            gif.on('finished', function(blob) {
+
+            finalBlobUrl = URL.createObjectURL(blob);
+            previewGif.src = finalBlobUrl;
+
+            previewContainer.style.display = 'block';
+            generateBtn.disabled = false;
+            loader.style.display = 'none';
+
+        });
+
+        gif.render();
     }
 
     downloadBtn.addEventListener('click', () => {
