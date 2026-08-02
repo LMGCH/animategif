@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Creador de GIF para LinkedIn</title>
+    <!-- Cargamos la librería para crear GIFs directamente en el navegador -->
+    <script src="https://cloudflare.com"></script>
+    <style>
+        :root {
+            --linkedin-blue: #0a66c2;
+            --dark-gray: #1d2226;
+        }
+        body {
+            font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #f3f2ef;
+            color: var(--dark-gray);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            max-width: 450px;
+            width: 100%;
+            text-align: center;
+        }
+        h1 { color: var(--linkedin-blue); font-size: 24px; margin-bottom: 5px; }
+        p { color: #666; font-size: 14px; margin-bottom: 25px; }
+        .form-group { margin-bottom: 15px; text-align: left; }
+        label { display: block; font-weight: 600; margin-bottom: 5px; font-size: 14px; }
+        input[type="text"], input[type="file"] {
+            width: 100%; padding: 10px; border: 1px solid #bfbfbf; border-radius: 4px; box-sizing: border-box;
+        }
+        button {
+            background-color: var(--linkedin-blue); color: white; border: none;
+            padding: 12px 20px; font-size: 16px; font-weight: 600; border-radius: 24px;
+            cursor: pointer; width: 100%; margin-top: 15px; transition: background 0.2s;
+        }
+        button:hover { background-color: #004182; }
+        button:disabled { background-color: #ccc; cursor: not-allowed; }
+        #preview-container { margin-top: 25px; display: none; }
+        #preview-gif { max-width: 100%; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1.5); }
+        .download-btn { background-color: #057642; margin-top: 10px; }
+        .download-btn:hover { background-color: #04522e; }
+        #loader { display: none; color: var(--linkedin-blue); font-weight: bold; margin-top: 15px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>GIF Generator para LinkedIn 🚀</h1>
+    <p>Crea una tarjeta animada con tu foto para destacar en el feed.</p>
+    
+    <div class="form-group">
+        <label for="name">Tu Nombre y Apellidos:</label>
+        <input type="text" id="name" placeholder="Ej. Ana García">
+    </div>
+    
+    <div class="form-group">
+        <label for="headline">Tu Titular Profesional:</label>
+        <input type="text" id="headline" placeholder="Ej. Fullstack Developer | React & Node">
+    </div>
+    
+    <div class="form-group">
+        <label for="avatar">Sube tu foto de perfil:</label>
+        <input type="file" id="avatar" accept="image/*">
+    </div>
+
+    <button id="generate-btn">✨ Generar mi GIF Animado</button>
+    <div id="loader">⚙️ Procesando tu GIF profesional...</div>
+
+    <div id="preview-container">
+        <h3>¡Tu GIF está listo! 🎉</h3>
+        <img id="preview-gif" src="" alt="Previsualización del GIF">
+        <button id="download-btn" class="download-btn">⬇️ Descargar GIF para LinkedIn</button>
+    </div>
+</div>
+
+<!-- Lienzo oculto donde se dibuja la magia frame a frame -->
+<canvas id="hidden-canvas" width="500" height="500" style="display:none;"></canvas>
+
+<script>
+    const generateBtn = document.getElementById('generate-btn');
+    const downloadBtn = document.getElementById('download-btn');
+    const loader = document.getElementById('loader');
+    const previewContainer = document.getElementById('preview-container');
+    const previewGif = document.getElementById('preview-gif');
+    const avatarInput = document.getElementById('avatar');
+    const canvas = document.getElementById('hidden-canvas');
+    const ctx = canvas.getContext('2d');
+
+    let finalGifUrl = '';
+
+    generateBtn.addEventListener('click', () => {
+        const name = document.getElementById('name').value || "Tu Nombre";
+        const headline = document.getElementById('headline').value || "Profesional";
+        const file = avatarInput.files[0];
+
+        if (!file) {
+            alert("Por favor, selecciona una foto de perfil antes de continuar.");
+            return;
+        }
+
+        generateBtn.disabled = true;
+        loader.style.display = 'block';
+        previewContainer.style.display = 'none';
+
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const img = new Image();
+            img.onload = function() {
+                createAnimateGif(img, name, headline);
+            };
+            img.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+    });
+
+    function createAnimateGif(userImg, name, headline) {
+        const frames = [];
+        const totalFrames = 8; // Animación ágil y fluida
+
+        for (let i = 0; i < totalFrames; i++) {
+            // 1. Limpiar lienzo y pintar fondo azul LinkedIn
+            ctx.fillStyle = '#0a66c2';
+            ctx.fillRect(0, 0, 500, 500);
+
+            // 2. Dibujar patrón de círculos de fondo que se expanden (Efecto Onda/Saludo)
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.arc(250, 160, 110 + (i * 8), 0, Math.PI * 2);
+            ctx.stroke();
+
+            // 3. Dibujar la foto de perfil del usuario en círculo
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(250, 160, 90, 0, Math.PI * 2);
+            ctx.closePath();
+            ctx.clip();
+            
+            // Efecto sutil de zoom en la foto para dar vida al saludo
+            const scaleFactor = 1 + (i * 0.005);
+            const w = 180 * scaleFactor;
+            const h = 180 * scaleFactor;
+            ctx.drawImage(userImg, 250 - w/2, 160 - h/2, w, h);
+            ctx.restore();
+
+            // Borde blanco profesional para la foto
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 5;
+            ctx.beginPath();
+            ctx.arc(250, 160, 91, 0, Math.PI * 2);
+            ctx.stroke();
+
+            // 4. Texto dinámico: El saludo cambia según el frame
+            ctx.fillStyle = '#ffffff';
+            ctx.textAlign = 'center';
+            ctx.font = 'bold 32px -apple-system, sans-serif';
+            
+            let saludo = "👋 ¡Hola, Red!";
+            if (i > 3) saludo = "🚀 ¡Conectemos!";
+            ctx.fillText(saludo, 250, 310);
+
+            // 5. Nombre del Candidato
+            ctx.font = 'bold 26px -apple-system, sans-serif';
+            ctx.fillText(name, 250, 370);
+
+            // 6. Titular Profesional (con recorte si es muy largo)
+            ctx.fillStyle = '#e1f0fe';
+            ctx.font = '16px -apple-system, sans-serif';
+            let shortHeadline = headline.length > 45 ? headline.substring(0, 42) + "..." : headline;
+            ctx.fillText(shortHeadline, 250, 410);
+
+            // 7. Botón simulación LinkedIn fijo abajo
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.roundRect(160, 440, 180, 36, 18);
+            ctx.fill();
+
+            ctx.fillStyle = '#0a66c2';
+            ctx.font = 'bold 14px -apple-system, sans-serif';
+            ctx.fillText('Ver mi Perfil 🔗', 250, 463);
+
+            // Guardar el frame actual en formato imagen de datos
+            frames.push(canvas.toDataURL('image/jpeg', 0.8));
+        }
+
+        // Configuración de la librería gifshot para empaquetar el GIF
+        gifshot.createGIF({
+            images: frames,
+            gifWidth: 500,
+            gifHeight: 500,
+            interval: 0.2, // Velocidad de cada frame (0.2 segundos)
+            numFrames: totalFrames,
+            sampleInterval: 10
+        }, function(obj) {
+            if(!obj.error) {
+                finalGifUrl = obj.image;
+                previewGif.src = finalGifUrl;
+                previewContainer.style.display = 'block';
+            } else {
+                alert("Hubo un error generando el GIF.");
+            }
+            generateBtn.disabled = false;
+            loader.style.display = 'none';
+        });
+    }
+
+    // Lógica del botón de descarga directa
+    downloadBtn.addEventListener('click', () => {
+        const link = document.createElement('a');
+        link.download = 'mi-presentacion-linkedin.gif';
+        link.href = finalGifUrl;
+        link.click();
+    });
+</script>
+
+</body>
+</html>
