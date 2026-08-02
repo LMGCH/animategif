@@ -16,8 +16,8 @@
         }
         body {
             font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: #f3f2ef;
-            color: var(--dark-gray);
+            background-color: #1d2226; /* ← Aquí ponemos el Gris Antracita en toda la web */
+            color: #f4f7f6;            /* ← Los textos de fuera de la tarjeta usarán tu color claro */
             margin: 0;
             padding: 20px;
             display: flex;
@@ -27,13 +27,14 @@
         .container {
             background: white;
             padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border-radius: 12px; /* ← Bordes un pelín más suaves */
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3); /* ← Sombra más profunda para dar volumen sobre el fondo oscuro */
             max-width: 480px;
             width: 100%;
             text-align: center;
             box-sizing: border-box;
         }
+
         h1 { color: var(--linkedin-blue); font-size: 24px; margin-bottom: 5px; }
         .subtitle { color: #666; font-size: 14px; margin-bottom: 20px; }
         
