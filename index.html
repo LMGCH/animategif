@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Creador de GIF para LinkedIn</title>
-    <!-- Cargamos los scripts necesarios para la codificación directa y nativa del GIF -->
+    <!-- Cargamos los scripts del codificador desde un CDN ultra-estable y rápido -->
     <script src="https://jsdelivr.net"></script>
     <script src="https://jsdelivr.net"></script>
     <script src="https://jsdelivr.net"></script>
@@ -16,7 +16,7 @@
         }
         body {
             font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: #f4f7f6;
+            background-color: #f3f2ef;
             color: var(--dark-gray);
             margin: 0;
             padding: 20px;
@@ -113,6 +113,7 @@
     </div>
 </div>
 
+<!-- Lienzo de renderizado -->
 <canvas id="hidden-canvas" width="500" height="500" style="display:none;"></canvas>
 
 <script>
@@ -147,7 +148,6 @@
         reader.onload = function(event) {
             const img = new Image();
             img.onload = function() {
-                // Pequeño retardo para asegurar que la UI muestre el cargador
                 setTimeout(() => {
                     createAnimateGif(img, name, headline);
                 }, 50);
@@ -158,27 +158,28 @@
     });
 
     function createAnimateGif(userImg, name, headline) {
-        // Inicializamos el codificador de GIF de forma 100% local y síncrona
+        // CORRECCIÓN CLAVE: Inicializar el codificador y forzar sus dimensiones antes de arrancar
         const encoder = new GIFEncoder();
         encoder.setRepeat(0); // Bucle infinito
-        encoder.setDelay(250); // Tiempo por frame (250ms)
+        encoder.setDelay(250); // Velocidad (250ms por frame)
+        encoder.setSize(500, 500); // <- ¡Obligatorio para que addFrame() no explote!
         encoder.start();
 
         const totalFrames = 8; 
 
         for (let i = 0; i < totalFrames; i++) {
-            // Fondo azul LinkedIn
+            // Fondo azul corporativo
             ctx.fillStyle = '#0a66c2';
             ctx.fillRect(0, 0, 500, 500);
 
-            // Ondas de radar animadas
+            // Ondas de radar de fondo
             ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
             ctx.lineWidth = 4;
             ctx.beginPath();
             ctx.arc(250, 160, 110 + (i * 8), 0, Math.PI * 2);
             ctx.stroke();
 
-            // Foto de perfil circular con micro-zoom
+            // Renderizado de la foto circular del usuario con micro-zoom
             ctx.save();
             ctx.beginPath();
             ctx.arc(250, 160, 90, 0, Math.PI * 2);
@@ -191,14 +192,14 @@
             ctx.drawImage(userImg, 250 - w/2, 160 - h/2, w, h);
             ctx.restore();
 
-            // Borde blanco de la foto
+            // Marco circular de color blanco
             ctx.strokeStyle = '#ffffff';
             ctx.lineWidth = 5;
             ctx.beginPath();
             ctx.arc(250, 160, 91, 0, Math.PI * 2);
             ctx.stroke();
 
-            // Textos cambiantes
+            // Mensajes dinámicos alternos
             ctx.fillStyle = '#ffffff';
             ctx.textAlign = 'center';
             ctx.font = 'bold 32px -apple-system, sans-serif';
@@ -207,15 +208,17 @@
             if (i > 3) saludo = "🚀 ¡Conectemos!";
             ctx.fillText(saludo, 250, 310);
 
+            // Dibujado del nombre
             ctx.font = 'bold 26px -apple-system, sans-serif';
             ctx.fillText(name, 250, 370);
 
+            // Dibujado del cargo profesional
             ctx.fillStyle = '#e1f0fe';
             ctx.font = '16px -apple-system, sans-serif';
             let shortHeadline = headline.length > 45 ? headline.substring(0, 42) + "..." : headline;
             ctx.fillText(shortHeadline, 250, 410);
 
-            // Botón estático inferior
+            // Botón de llamada a la acción visual inferior
             ctx.fillStyle = '#ffffff';
             ctx.beginPath();
             ctx.roundRect(160, 440, 180, 36, 18);
@@ -225,13 +228,13 @@
             ctx.font = 'bold 14px -apple-system, sans-serif';
             ctx.fillText('Ver mi Perfil 🔗', 250, 463);
 
-            // Pasamos los píxeles reales del lienzo directamente al codificador
+            // Inyectar el frame actual al codificador de píxeles
             encoder.addFrame(ctx);
         }
 
         encoder.finish();
         
-        // Convertimos el flujo de bytes binarios del GIF en un objeto URL de descarga estable
+        // Extraer los flujos de datos binarios y empaquetar el GIF final
         const binaryStream = encoder.stream();
         const dataBytes = new Uint8Array(binaryStream.pages.reduce((acc, page) => acc.concat(page), []));
         const blob = new Blob([dataBytes], { type: 'image/gif' });
@@ -239,21 +242,24 @@
         finalBlobUrl = URL.createObjectURL(blob);
         previewGif.src = finalBlobUrl;
         
-        // Mostramos el contenedor con el resultado
+        // Mostrar los resultados y restaurar los controles
         previewContainer.style.display = 'block';
         generateBtn.disabled = false;
         loader.style.display = 'none';
+    }
     }
 
     downloadBtn.addEventListener('click', () => {
         const link = document.createElement('a');
         link.download = 'mi-presentacion-linkedin.gif';
-                link.href = finalBlobUrl;
+        link.href = finalBlobUrl;
         link.click();
     });
 </script>
 
 </body>
 </html>
+
+
 
 
