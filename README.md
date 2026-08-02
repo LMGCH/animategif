@@ -11,7 +11,7 @@ Ideal para compartir en publicaciones, artículos o mensajes directos y captar l
 Así es como se ve la tarjeta animada final generada por la herramienta:
 
 <p align="center">
-  <img src="https://githubusercontent.com" alt="LinkedIn GIF Demo" width="400" style="border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+  <img src="https://github.com/LMGCH/animategif/blob/main/mi-presentacion-Red.gif?raw=true" alt="LinkedIn GIF Demo" width="400" style="border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
 </p>
 
 ---
