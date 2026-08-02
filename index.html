@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Creador de GIF para LinkedIn</title>
-    <!-- Cargamos la librería oficial estable desde CDNJS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gifshot/0.3.2/gifshot.min.js"></script>
+    <!-- Cargamos los scripts necesarios para la codificación directa y nativa del GIF -->
+    <script src="https://jsdelivr.net"></script>
+    <script src="https://jsdelivr.net"></script>
+    <script src="https://jsdelivr.net"></script>
     <style>
         :root {
             --linkedin-blue: #0a66c2;
@@ -14,7 +16,7 @@
         }
         body {
             font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: #f3f2ef;
+            background-color: #f4f7f6;
             color: var(--dark-gray);
             margin: 0;
             padding: 20px;
@@ -68,7 +70,6 @@
         .download-btn:hover { background-color: #04522e; }
         
         #loader { display: none; color: var(--linkedin-blue); font-weight: bold; margin-top: 15px; }
-        #error-message { display: none; color: #cc0000; font-weight: bold; margin-top: 15px; font-size: 14px; }
     </style>
 </head>
 <body>
@@ -82,7 +83,6 @@
         <ul>
             <li>Sube una <strong>Foto estática</strong> (tu rostro centrado). La web la animará con efectos.</li>
             <li>Formatos permitidos de imagen: <strong>JPG, JPEG o PNG</strong>.</li>
-            <li>No se admiten formatos de archivo pesados o de impresión (como BMP o TIFF).</li>
             <li>Peso recomendado de archivo: <strong>Menos de 4 MB</strong> para optimizar velocidad.</li>
         </ul>
     </div>
@@ -104,8 +104,7 @@
     </div>
 
     <button id="generate-btn">✨ Generar mi GIF Animado</button>
-    <div id="loader">⚙️ Procesando tu GIF profesional (tarda de 3 a 5 segundos)...</div>
-    <div id="error-message">❌ Error al procesar la imagen. Asegúrate de usar un archivo JPG o PNG válido.</div>
+    <div id="loader">⚙️ Procesando tu GIF profesional (tarda de 2 a 4 segundos)...</div>
 
     <div id="preview-container">
         <h3>¡Tu GIF está listo! 🎉</h3>
@@ -120,14 +119,13 @@
     const generateBtn = document.getElementById('generate-btn');
     const downloadBtn = document.getElementById('download-btn');
     const loader = document.getElementById('loader');
-    const errorMessage = document.getElementById('error-message');
     const previewContainer = document.getElementById('preview-container');
     const previewGif = document.getElementById('preview-gif');
     const avatarInput = document.getElementById('avatar');
     const canvas = document.getElementById('hidden-canvas');
     const ctx = canvas.getContext('2d');
 
-    let finalGifUrl = '';
+    let finalBlobUrl = '';
 
     generateBtn.addEventListener('click', () => {
         const name = document.getElementById('name').value || "Tu Nombre";
@@ -139,56 +137,48 @@
             return;
         }
 
-        const file = files[0];
-        
         generateBtn.disabled = true;
         loader.style.display = 'block';
-        errorMessage.style.display = 'none';
         previewContainer.style.display = 'none';
 
+        const file = files[0];
         const reader = new FileReader();
-        
-        reader.onerror = function() {
-            showError();
-        };
 
         reader.onload = function(event) {
             const img = new Image();
-            img.onerror = function() {
-                showError();
-            };
             img.onload = function() {
-                try {
+                // Pequeño retardo para asegurar que la UI muestre el cargador
+                setTimeout(() => {
                     createAnimateGif(img, name, headline);
-                } catch (e) {
-                    showError();
-                }
+                }, 50);
             };
             img.src = event.target.result;
         };
         reader.readAsDataURL(file);
     });
 
-    function showError() {
-        loader.style.display = 'none';
-        errorMessage.style.display = 'block';
-        generateBtn.disabled = false;
-    }
-
     function createAnimateGif(userImg, name, headline) {
-        const frames = [];
+        // Inicializamos el codificador de GIF de forma 100% local y síncrona
+        const encoder = new GIFEncoder();
+        encoder.setRepeat(0); // Bucle infinito
+        encoder.setDelay(250); // Tiempo por frame (250ms)
+        encoder.start();
+
         const totalFrames = 8; 
 
         for (let i = 0; i < totalFrames; i++) {
+            // Fondo azul LinkedIn
             ctx.fillStyle = '#0a66c2';
             ctx.fillRect(0, 0, 500, 500);
 
+            // Ondas de radar animadas
             ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
             ctx.lineWidth = 4;
             ctx.beginPath();
             ctx.arc(250, 160, 110 + (i * 8), 0, Math.PI * 2);
             ctx.stroke();
 
+            // Foto de perfil circular con micro-zoom
             ctx.save();
             ctx.beginPath();
             ctx.arc(250, 160, 90, 0, Math.PI * 2);
@@ -201,12 +191,14 @@
             ctx.drawImage(userImg, 250 - w/2, 160 - h/2, w, h);
             ctx.restore();
 
+            // Borde blanco de la foto
             ctx.strokeStyle = '#ffffff';
             ctx.lineWidth = 5;
             ctx.beginPath();
             ctx.arc(250, 160, 91, 0, Math.PI * 2);
             ctx.stroke();
 
+            // Textos cambiantes
             ctx.fillStyle = '#ffffff';
             ctx.textAlign = 'center';
             ctx.font = 'bold 32px -apple-system, sans-serif';
@@ -223,6 +215,7 @@
             let shortHeadline = headline.length > 45 ? headline.substring(0, 42) + "..." : headline;
             ctx.fillText(shortHeadline, 250, 410);
 
+            // Botón estático inferior
             ctx.fillStyle = '#ffffff';
             ctx.beginPath();
             ctx.roundRect(160, 440, 180, 36, 18);
@@ -232,39 +225,35 @@
             ctx.font = 'bold 14px -apple-system, sans-serif';
             ctx.fillText('Ver mi Perfil 🔗', 250, 463);
 
-            frames.push(canvas.toDataURL('image/jpeg', 0.8));
+            // Pasamos los píxeles reales del lienzo directamente al codificador
+            encoder.addFrame(ctx);
         }
 
-        // Configuración corregida y forzada para entorno web síncrono
-        gifshot.createGIF({
-            images: frames,
-            gifWidth: 500,
-            gifHeight: 500,
-            interval: 0.2, 
-            numFrames: totalFrames,
-            sampleInterval: 10,
-            numWorkers: 0 // CRÍTICO: Desactiva los Web Workers para evitar bloqueos en rutas relativas de GitHub Pages
-        }, function(obj) {
-            if(!obj.error) {
-                finalGifUrl = obj.image;
-                previewGif.src = finalGifUrl;
-                previewContainer.style.display = 'block';
-            } else {
-                showError();
-            }
-            generateBtn.disabled = false;
-            loader.style.display = 'none';
-        });
+        encoder.finish();
+        
+        // Convertimos el flujo de bytes binarios del GIF en un objeto URL de descarga estable
+        const binaryStream = encoder.stream();
+        const dataBytes = new Uint8Array(binaryStream.pages.reduce((acc, page) => acc.concat(page), []));
+        const blob = new Blob([dataBytes], { type: 'image/gif' });
+        
+        finalBlobUrl = URL.createObjectURL(blob);
+        previewGif.src = finalBlobUrl;
+        
+        // Mostramos el contenedor con el resultado
+        previewContainer.style.display = 'block';
+        generateBtn.disabled = false;
+        loader.style.display = 'none';
     }
 
     downloadBtn.addEventListener('click', () => {
         const link = document.createElement('a');
         link.download = 'mi-presentacion-linkedin.gif';
-        link.href = finalGifUrl;
+                link.href = finalBlobUrl;
         link.click();
     });
 </script>
 
 </body>
 </html>
+
 
