@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Creador de GIF para LinkedIn</title>
-    <script src="https://cloudflare.com"></script>
+    <!-- Cargamos la librería oficial estable desde CDNJS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gifshot/0.3.2/gifshot.min.js"></script>
     <style>
         :root {
             --linkedin-blue: #0a66c2;
@@ -34,18 +35,17 @@
         h1 { color: var(--linkedin-blue); font-size: 24px; margin-bottom: 5px; }
         .subtitle { color: #666; font-size: 14px; margin-bottom: 20px; }
         
-        /* Bloque de instrucciones claro */
         .instructions-box {
             background-color: #f8f9fa;
             border-left: 4px solid var(--linkedin-blue);
-            padding: 12px;
+            padding: 15px;
             text-align: left;
             margin-bottom: 20px;
             border-radius: 0 8px 8px 0;
         }
         .instructions-box h4 { margin: 0 0 6px 0; font-size: 14px; color: var(--dark-gray); }
         .instructions-box ul { margin: 0; padding-left: 18px; font-size: 13px; color: #555; }
-        .instructions-box li { margin-bottom: 4px; }
+        .instructions-box li { margin-bottom: 6px; }
 
         .form-group { margin-bottom: 15px; text-align: left; }
         label { display: block; font-weight: 600; margin-bottom: 5px; font-size: 14px; }
@@ -77,14 +77,13 @@
     <h1>GIF Generator para LinkedIn 🚀</h1>
     <p class="subtitle">Crea una tarjeta animada profesional para destacar en el feed.</p>
     
-    <!-- NUEVA SECCIÓN: Instrucciones de uso -->
     <div class="instructions-box">
         <h4>📋 Requisitos del archivo:</h4>
         <ul>
-            <li>Sube una **Foto fija** (tu rostro centrado). La web la animará automáticamente.</li>
-            <li>Formatos permitidos: **JPG, JPEG o PNG**.</li>
-            <li>Evita formatos pesados como BMP o TIFF.</li>
-            <li>Tamaño máximo recomendado: **Recomendado menos de 4MB**.</li>
+            <li>Sube una <strong>Foto estática</strong> (tu rostro centrado). La web la animará con efectos.</li>
+            <li>Formatos permitidos de imagen: <strong>JPG, JPEG o PNG</strong>.</li>
+            <li>No se admiten formatos de archivo pesados o de impresión (como BMP o TIFF).</li>
+            <li>Peso recomendado de archivo: <strong>Menos de 4 MB</strong> para optimizar velocidad.</li>
         </ul>
     </div>
     
@@ -100,13 +99,12 @@
     
     <div class="form-group">
         <label for="avatar">Sube tu foto de perfil:</label>
-        <!-- Cambiado accept para restringir formatos problemáticos -->
         <input type="file" id="avatar" accept=".jpg, .jpeg, .png">
-        <span class="file-help">Solo imágenes planas JPG o PNG. No admite archivos de video.</span>
+        <span class="file-help">Selecciona una imagen plana. No admite archivos de video (.mp4, .avi).</span>
     </div>
 
     <button id="generate-btn">✨ Generar mi GIF Animado</button>
-    <div id="loader">⚙️ Procesando tu GIF profesional (suele tardar 3-5 segundos)...</div>
+    <div id="loader">⚙️ Procesando tu GIF profesional (tarda de 3 a 5 segundos)...</div>
     <div id="error-message">❌ Error al procesar la imagen. Asegúrate de usar un archivo JPG o PNG válido.</div>
 
     <div id="preview-container">
@@ -143,13 +141,6 @@
 
         const file = files[0];
         
-        // Validación extra de formato en JS por seguridad
-        const validExtensions = ['image/jpeg', 'image/jpg', 'image/png'];
-        if (!validExtensions.includes(file.type)) {
-            alert("El formato del archivo no es compatible. Por favor, sube una imagen JPG o PNG.");
-            return;
-        }
-
         generateBtn.disabled = true;
         loader.style.display = 'block';
         errorMessage.style.display = 'none';
@@ -244,13 +235,15 @@
             frames.push(canvas.toDataURL('image/jpeg', 0.8));
         }
 
+        // Configuración corregida y forzada para entorno web síncrono
         gifshot.createGIF({
             images: frames,
             gifWidth: 500,
             gifHeight: 500,
             interval: 0.2, 
             numFrames: totalFrames,
-            sampleInterval: 10
+            sampleInterval: 10,
+            numWorkers: 0 // CRÍTICO: Desactiva los Web Workers para evitar bloqueos en rutas relativas de GitHub Pages
         }, function(obj) {
             if(!obj.error) {
                 finalGifUrl = obj.image;
@@ -264,7 +257,6 @@
         });
     }
 
-    // Lógica del botón para descargar el archivo GIF generado
     downloadBtn.addEventListener('click', () => {
         const link = document.createElement('a');
         link.download = 'mi-presentacion-linkedin.gif';
@@ -275,3 +267,4 @@
 
 </body>
 </html>
+
