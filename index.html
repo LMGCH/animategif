@@ -215,8 +215,11 @@ function createAnimateGif(userImg, name, headline, linkedin) {
 
     const theme = THEMES[selectedTheme];
     let linkedinProfile = linkedin
+    .trim()
     .replace(/^https?:\/\/(www\.)?linkedin\.com\/in\//i, "")
     .replace(/^linkedin\.com\/in\//i, "")
+    .replace(/^@/, "")
+    .replace(/^\/in\//i, "")
     .replace(/\/$/, "");
     if (!linkedinProfile) {
     linkedinProfile = "tu-perfil";
