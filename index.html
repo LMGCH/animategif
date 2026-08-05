@@ -105,7 +105,18 @@
         <input type="file" id="avatar" accept=".jpg, .jpeg, .png">
         <span class="file-help">Selecciona una imagen plana. No admite archivos de video (.mp4, .avi).</span>
     </div>
+<div class="form-group">
+    <label for="theme">Estilo profesional:</label>
 
+    <select id="theme">
+
+<option value="linkedin">🔵 Corporate</option>
+<option value="github">⚫ Developer</option>
+<option value="linux">🟢 Open Source</option>
+<option value="ai">🟣 AI & Data</option>
+
+    </select>
+</div>
     <button id="generate-btn">✨ Generar mi GIF Animado</button>
     <div id="loader">⚙️ Procesando tu GIF profesional (tarda de 2 a 4 segundos)...</div>
 
@@ -193,7 +204,10 @@ function createAnimateGif(userImg, name, headline) {
     const MAX_NAME_WIDTH = 420;
     const MAX_HEADLINE_WIDTH = 430;
 
-    const theme = THEMES.linkedin;
+    const selectedTheme =
+    document.getElementById("theme").value;
+
+    const theme = THEMES[selectedTheme];
 
     // Inicializar el codificador GIF
     const gif = new GIF({
@@ -282,12 +296,12 @@ while (headlineFont > 11) {
 ctx.fillText(shownHeadline, 250, 410);
 
             // Botón de llamada a la acción visual inferior
-            ctx.fillStyle = '#ffffff';
+            ctx.fillStyle=theme.text;
             ctx.beginPath();
             ctx.roundRect(160, 440, 180, 36, 18);
             ctx.fill();
 
-            ctx.fillStyle = '#0a66c2';
+            ctx.fillStyle=theme.background;
             ctx.font = 'bold 14px -apple-system, sans-serif';
             ctx.fillText('Ver mi Perfil 🔗', 250, 463);
 
