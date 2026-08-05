@@ -210,6 +210,7 @@ function createAnimateGif(userImg, name, headline, linkedin) {
 
     const MAX_NAME_WIDTH = 420;
     const MAX_HEADLINE_WIDTH = 430;
+    const MAX_LINKEDIN_WIDTH = 240;
 
     const selectedTheme =
     document.getElementById("theme").value;
@@ -343,15 +344,28 @@ ctx.fillText("in", 121, 462);
 
 // Usuario
 ctx.fillStyle = theme.background;
-ctx.font = "bold 15px -apple-system, sans-serif";
 ctx.textAlign = "left";
-ctx.fillText(linkedinUser, 152, 463);
+
+// Ajustar automáticamente el tamaño del usuario de LinkedIn
+let userFont = 15;
+
+ctx.font = `bold ${userFont}px -apple-system, sans-serif`;
+
+while (
+    ctx.measureText(linkedinProfile).width > MAX_LINKEDIN_WIDTH &&
+    userFont > 11
+) {
+    userFont--;
+    ctx.font = `bold ${userFont}px -apple-system, sans-serif`;
+}
+
+ctx.fillText(linkedinProfile, 152, 463);
 
 // Restaurar alineación
 ctx.textAlign = "center";
 
             ctx.textAlign="right";
-            ctx.fillStyle="rgba(255,255,255,0.18)";
+            ctx.fillStyle="rgba(255,255,255,0.25)";
             ctx.font="11px -apple-system,sans-serif";
             ctx.fillText("Creado con Ruta TI",490,492);
             
