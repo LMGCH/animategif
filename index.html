@@ -206,7 +206,7 @@ ai:{
         reader.readAsDataURL(file);
     });
 
-function createAnimateGif(userImg, name, headline, linkedin) {
+function createAnimateGif(userImg, name, headline, linkedinUser) {
 
     const MAX_NAME_WIDTH = 420;
     const MAX_HEADLINE_WIDTH = 430;
@@ -216,7 +216,7 @@ function createAnimateGif(userImg, name, headline, linkedin) {
     document.getElementById("theme").value;
 
     const theme = THEMES[selectedTheme];
-    let linkedinProfile = linkedin
+    let linkedinProfile = linkedinUser
     .trim()
     .replace(/^https?:\/\/(www\.)?linkedin\.com\/in\//i, "")
     .replace(/^linkedin\.com\/in\//i, "")
