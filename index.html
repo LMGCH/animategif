@@ -156,7 +156,7 @@ secondary:"#e1f0fe"
 github:{
 background:"#24292e",
 text:"#ffffff",
-secondary:"#58a6ff"
+secondary:"#C9D2DD"
 },
 
 linux:{
@@ -221,7 +221,14 @@ function createAnimateGif(userImg, name, headline, linkedin) {
     .replace(/^@/, "")
     .replace(/^\/in\//i, "")
     .replace(/\/$/, "");
-    if (!linkedinProfile) {
+
+// Evitar que nombres muy largos se salgan de la banda
+if (linkedinProfile.length > 28) {
+    linkedinProfile =
+        linkedinProfile.substring(0, 25) + "...";
+}
+
+if (!linkedinProfile) {
     linkedinProfile = "tu-perfil";
 }
     
@@ -331,13 +338,13 @@ ctx.fill();
 ctx.fillStyle = "#FFFFFF";
 ctx.font = "bold 14px Arial";
 ctx.textAlign = "center";
-ctx.fillText("in", 121, 463);
+ctx.fillText("in", 121, 461);
 
 // Usuario
 ctx.fillStyle = theme.background;
 ctx.font = "bold 15px -apple-system, sans-serif";
 ctx.textAlign = "left";
-ctx.fillText(linkedinProfile, 145, 463);
+ctx.fillText(linkedinProfile, 152, 463);
 
 // Restaurar alineación
 ctx.textAlign = "center";
