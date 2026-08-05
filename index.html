@@ -308,27 +308,33 @@ while (headlineFont > 11) {
 
 ctx.fillText(shownHeadline, 250, 410);
 
-// Banda inferior con perfil de LinkedIn
+// ======================================================
+// Perfil de LinkedIn
+// ======================================================
+
+// Banda blanca
 ctx.fillStyle = theme.text;
 ctx.beginPath();
-ctx.roundRect(100, 440, 300, 36, 18);
+ctx.roundRect(90, 440, 320, 38, 19);
 ctx.fill();
 
 // Icono LinkedIn
 ctx.fillStyle = "#0A66C2";
 ctx.beginPath();
-ctx.roundRect(115, 446, 24, 24, 5);
+ctx.roundRect(108, 446, 26, 26, 5);
 ctx.fill();
 
+// Texto "in"
 ctx.fillStyle = "#FFFFFF";
-ctx.font = "bold 13px Arial";
-ctx.fillText("in", 127, 463);
+ctx.font = "bold 14px Arial";
+ctx.textAlign = "center";
+ctx.fillText("in", 121, 463);
 
 // Usuario
 ctx.fillStyle = theme.background;
 ctx.font = "bold 15px -apple-system, sans-serif";
 ctx.textAlign = "left";
-ctx.fillText("/in/" + linkedinProfile, 150, 463);
+ctx.fillText(linkedinProfile, 145, 463);
 
 // Restaurar alineación
 ctx.textAlign = "center";
