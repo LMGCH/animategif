@@ -188,21 +188,25 @@ secondary:"#22d3ee"
         reader.readAsDataURL(file);
     });
 
-    function createAnimateGif(userImg, name, headline) {
-        
-        const theme=THEMES.linkedin;
-        // CORRECCIÓN CLAVE: Inicializar el codificador y forzar sus dimensiones antes de arrancar
-        const gif = new GIF({
-    workers: 2,
-    quality: 10,
-    workerScript: 'gif.worker.js'
-});
+function createAnimateGif(userImg, name, headline) {
+
+    const MAX_NAME_WIDTH = 420;
+    const MAX_HEADLINE_WIDTH = 430;
+
+    const theme = THEMES.linkedin;
+
+    // Inicializar el codificador GIF
+    const gif = new GIF({
+        workers: 2,
+        quality: 10,
+        workerScript: 'gif.worker.js'
+    });
 
         const totalFrames = 8; 
 
         for (let i = 0; i < totalFrames; i++) {
             // Fondo azul corporativo
-            ctx.fillStyle = '#0a66c2';
+            ctx.fillStyle = theme.background;
             ctx.fillRect(0, 0, 500, 500);
 
             // Ondas de radar de fondo
@@ -233,7 +237,7 @@ secondary:"#22d3ee"
             ctx.stroke();
 
             // Mensajes dinámicos alternos
-            ctx.fillStyle = '#ffffff';
+            ctx.fillStyle = theme.text;
             ctx.textAlign = 'center';
             ctx.font = 'bold 32px -apple-system, sans-serif';
             
@@ -248,7 +252,7 @@ secondary:"#22d3ee"
 
                 ctx.font = `bold ${nameFontSize}px -apple-system, sans-serif`;
 
-                if (ctx.measureText(name).width <= 420)
+                if (ctx.measureText(name).width <= MAX_NAME_WIDTH)
                     break;
 
             nameFontSize--;
@@ -259,21 +263,38 @@ ctx.fillStyle = "#ffffff";
 ctx.fillText(name,250,370);
 
             // Dibujado del cargo profesional
-            ctx.fillStyle = '#e1f0fe';
+            ctx.fillStyle = theme.secondary;
 
             let headlineFont = 16;
             let shownHeadline = headline;
 
-            while(headlineFont>11){
+            let headlineFont = 16;
+let shownHeadline = headline;
 
-            ctx.font=`${headlineFont}px -apple-system, sans-serif`;
+while (headlineFont > 11) {
 
-            if(ctx.measureText(shownHeadline).width<=430)
-            break;
+    ctx.font = `${headlineFont}px -apple-system, sans-serif`;
 
-            headlineFont--;
+    if (ctx.measureText(shownHeadline).width <= MAX_HEADLINE_WIDTH)
+        break;
+
+    headlineFont--;
 
 }
+
+if (ctx.measureText(shownHeadline).width > 430) {
+
+    while (shownHeadline.length > 0 &&
+           ctx.measureText(shownHeadline + "...").width > 430) {
+
+        shownHeadline = shownHeadline.slice(0, -1);
+
+    }
+
+    shownHeadline += "...";
+
+}
+
 ctx.fillText(shownHeadline,250,410);
 
             // Botón de llamada a la acción visual inferior
@@ -287,7 +308,7 @@ ctx.fillText(shownHeadline,250,410);
             ctx.fillText('Ver mi Perfil 🔗', 250, 463);
 
             ctx.textAlign="right";
-            ctx.fillStyle="rgba(255,255,255,0.35)";
+            ctx.fillStyle="rgba(255,255,255,0.18)";
             ctx.font="11px -apple-system,sans-serif";
             ctx.fillText("Creado con Ruta TI",490,492);
             
