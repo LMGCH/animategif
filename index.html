@@ -129,6 +129,34 @@
     const canvas = document.getElementById('hidden-canvas');
     const ctx = canvas.getContext('2d');
 
+    const THEMES={
+
+linkedin:{
+background:"#0a66c2",
+text:"#ffffff",
+secondary:"#e1f0fe"
+},
+
+github:{
+background:"#24292e",
+text:"#ffffff",
+secondary:"#58a6ff"
+},
+
+linux:{
+background:"#2e7d32",
+text:"#ffffff",
+secondary:"#ffeb3b"
+},
+
+ai:{
+background:"#5b21b6",
+text:"#ffffff",
+secondary:"#22d3ee"
+}
+
+};
+    
     let finalBlobUrl = '';
 
     generateBtn.addEventListener('click', () => {
@@ -161,6 +189,8 @@
     });
 
     function createAnimateGif(userImg, name, headline) {
+        
+        const theme=THEMES.linkedin;
         // CORRECCIÓN CLAVE: Inicializar el codificador y forzar sus dimensiones antes de arrancar
         const gif = new GIF({
     workers: 2,
@@ -211,15 +241,40 @@
             if (i > 3) saludo = "🚀 ¡Conectemos!";
             ctx.fillText(saludo, 250, 310);
 
-            // Dibujado del nombre
-            ctx.font = 'bold 26px -apple-system, sans-serif';
-            ctx.fillText(name, 250, 370);
+            // Dibujado del nombre (adaptación automática)
+            let nameFontSize = 26;
+
+            while (nameFontSize > 16) {
+
+                ctx.font = `bold ${nameFontSize}px -apple-system, sans-serif`;
+
+                if (ctx.measureText(name).width <= 420)
+                    break;
+
+            nameFontSize--;
+
+}
+
+ctx.fillStyle = "#ffffff";
+ctx.fillText(name,250,370);
 
             // Dibujado del cargo profesional
             ctx.fillStyle = '#e1f0fe';
-            ctx.font = '16px -apple-system, sans-serif';
-            let shortHeadline = headline.length > 45 ? headline.substring(0, 42) + "..." : headline;
-            ctx.fillText(shortHeadline, 250, 410);
+
+            let headlineFont = 16;
+            let shownHeadline = headline;
+
+            while(headlineFont>11){
+
+            ctx.font=`${headlineFont}px -apple-system, sans-serif`;
+
+            if(ctx.measureText(shownHeadline).width<=430)
+            break;
+
+            headlineFont--;
+
+}
+ctx.fillText(shownHeadline,250,410);
 
             // Botón de llamada a la acción visual inferior
             ctx.fillStyle = '#ffffff';
@@ -231,6 +286,13 @@
             ctx.font = 'bold 14px -apple-system, sans-serif';
             ctx.fillText('Ver mi Perfil 🔗', 250, 463);
 
+            ctx.textAlign="right";
+            ctx.fillStyle="rgba(255,255,255,0.35)";
+            ctx.font="11px -apple-system,sans-serif";
+            ctx.fillText("Creado con Ruta TI",490,492);
+            
+            ctx.textAlign = "center";
+            
             // Inyectar el frame actual al codificador de píxeles
                 gif.addFrame(canvas, {
                 copy: true,
