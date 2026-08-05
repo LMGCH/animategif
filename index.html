@@ -262,13 +262,10 @@ function createAnimateGif(userImg, name, headline) {
 ctx.fillStyle = "#ffffff";
 ctx.fillText(name,250,370);
 
-            // Dibujado del cargo profesional
-            ctx.fillStyle = theme.secondary;
+// Dibujado del cargo profesional
+ctx.fillStyle = theme.secondary;
 
-            let headlineFont = 16;
-            let shownHeadline = headline;
-
-            let headlineFont = 16;
+let headlineFont = 16;
 let shownHeadline = headline;
 
 while (headlineFont > 11) {
@@ -282,20 +279,7 @@ while (headlineFont > 11) {
 
 }
 
-if (ctx.measureText(shownHeadline).width > 430) {
-
-    while (shownHeadline.length > 0 &&
-           ctx.measureText(shownHeadline + "...").width > 430) {
-
-        shownHeadline = shownHeadline.slice(0, -1);
-
-    }
-
-    shownHeadline += "...";
-
-}
-
-ctx.fillText(shownHeadline,250,410);
+ctx.fillText(shownHeadline, 250, 410);
 
             // Botón de llamada a la acción visual inferior
             ctx.fillStyle = '#ffffff';
